@@ -40,8 +40,8 @@ installAptBasic() {
     echo "[+] basic update with apt" 
     apt-get update -y --fix-missing #  && apt-get upgrade -y && apt-get dist-upgrade -y
 
-    echo "[+] instlal nmap sqlmap python3 pip and zsh byobu"
-    apt-get install nmap git zsh python3 python3-pip byobu -y 
+    echo "[+] instlal nmap sqlmap python3 pip and zsh byobu libpcap-dev"
+    apt-get install nmap git zsh python3 python3-pip byobu libpcap-dev-y 
 
     echo "[+] install 7z utils"
     apt install p7zip p7zip-full p7zip-rar -y
@@ -86,5 +86,5 @@ installAptBasic
 installRustScan
 installRedTools
 installOhmyzsh
-enableByobu
+#enableByobu
 setupPath
