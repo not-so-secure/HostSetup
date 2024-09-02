@@ -66,10 +66,10 @@ installRedTools() {
     proxy_path=$HOME/proxy
     mkdir -p $proxy_path
     pushd $proxy_path
-    # downloadRelease "fatedier/frp" "*linux_amd64.tar.gz" "frp_linux.tar.gz" 
-    # downloadRelease "fatedier/frp" "*windows_amd64.zip" "frp_windows.zip" 
-    # downloadRelease "jpillora/chisel" "*linux_amd64.gz" "chisel_linux.gz" 
-    # downloadRelease "jpillora/chisel" "*windows_amd64.gz" "chisel_windows.gz"
+    downloadRelease "fatedier/frp" "*linux_amd64.tar.gz" "frp_linux.tar.gz" 
+    downloadRelease "fatedier/frp" "*windows_amd64.zip" "frp_windows.zip" 
+    downloadRelease "jpillora/chisel" "*linux_amd64.gz" "chisel_linux.gz" 
+    downloadRelease "jpillora/chisel" "*windows_amd64.gz" "chisel_windows.gz"
     popd 
 }
 
