@@ -382,15 +382,34 @@ installGoTools() {
 
     # Format: "binary_name:module_path@version"
     local tools=(
+        # ── Fuzzing / web ────────────────────────
         "ffuf:github.com/ffuf/ffuf/v2@latest"
         "gobuster:github.com/OJ/gobuster/v3@latest"
+        "gospider:github.com/jaeles-project/gospider@latest"
+        "gowitness:github.com/sensepost/gowitness@latest"
+        "getJS:github.com/003random/getJS@latest"
+        # ── Vuln scanning ────────────────────────
         "afrog:github.com/zan8in/afrog/v2/cmd/afrog@latest"
+        # ── Subdomain / DNS ──────────────────────
         "assetfinder:github.com/tomnomnom/assetfinder@latest"
         "httprobe:github.com/tomnomnom/httprobe@latest"
+        "github-subdomains:github.com/gwen001/github-subdomains@latest"
+        "github-endpoints:github.com/gwen001/github-endpoints@latest"
+        # ── CIDR / IP ────────────────────────────
+        "mapcidr:github.com/projectdiscovery/mapcidr/cmd/mapcidr@latest"
+        # ── Secrets / code ───────────────────────
+        "gitleaks:github.com/gitleaks/gitleaks/v8@latest"
+        "gitdorks_go:github.com/damit5/gitdorks_go@latest"
+        # ── Workflow utilities ───────────────────
         "waybackurls:github.com/tomnomnom/waybackurls@latest"
         "gf:github.com/tomnomnom/gf@latest"
         "anew:github.com/tomnomnom/anew@latest"
         "hakrawler:github.com/hakluke/hakrawler@latest"
+        "fzf:github.com/junegunn/fzf@latest"
+        "rush:github.com/shenwei356/rush@latest"
+        "csvtk:github.com/shenwei356/csvtk/v2@latest"
+        "eget:github.com/zyedidia/eget@latest"
+        "sgn:github.com/EgeBalci/sgn@latest"
     )
 
     for entry in "${tools[@]}"; do
@@ -467,6 +486,23 @@ installRedTools() {
 
     download_from_git "nicocha30/ligolo-ng" \
         "agent_.*linux_${ARCH}\.tar\.gz$"           ligolo-agent
+
+    # ── Scanning / fingerprinting ────────────
+    # findomain: amd64 has no arch suffix; arm64 uses 'aarch64'
+    local _findomain_pat="findomain-linux$"
+    [[ "$ARCH" == "arm64" ]] && _findomain_pat="findomain-linux-aarch64$"
+    download_from_git "Findomain/Findomain"    "$_findomain_pat"           findomain
+
+    download_from_git "shadow1ng/fscan"        "fscan_${ARCH}$"            fscan
+    download_from_git "lcvvvv/kscan"           "linux_${ARCH}.*\.zip$"     kscan
+    download_from_git "boy-hack/ksubdomain"    "linux_${ARCH}.*\.tar\.gz$" ksubdomain
+    download_from_git "EdgeSecurityTeam/EHole" "linux_${ARCH}.*\.tar\.gz$" EHole
+
+    # ── Tunneling ────────────────────────────
+    download_from_git "ngrok/ngrok"            "linux-${ARCH}\.tgz$"       ngrok
+
+    # ── Recon utility ────────────────────────
+    download_from_git "4ra1n/MoreFind"         "linux.*${ARCH}.*\.tar\.gz$" MoreFind
 
     # ── Windows drops (kept in proxy/ for target delivery) ───
     info "Storing Windows agent drops in $PROXY ..."
@@ -626,13 +662,25 @@ installWordlists() {
 #  SECTION: PATH SETUP (idempotent)
 # ─────────────────────────────────────────────
 setupPath() {
-    grep -q '/opt/work/bin'     "$RC_FILE" 2>/dev/null \
-        || echo "export PATH=/opt/work/bin:\$HOME/go/bin:\$PATH" >> "$RC_FILE"
-    grep -q '\.local/bin'       "$RC_FILE" 2>/dev/null \
-        || echo 'export PATH=$HOME/.local/bin:$PATH'             >> "$RC_FILE"
-    grep -q '/usr/local/go/bin' "$RC_FILE" 2>/dev/null \
-        || echo 'export PATH=/usr/local/go/bin:$PATH'            >> "$RC_FILE"
-    info "PATH configured in $RC_FILE"
+    # Detect all existing rc files at runtime — handles the case where zsh
+    # was just installed by this script (RC_FILE at top was still .bashrc)
+    local rc_files=()
+    [[ -f "$HOME/.bashrc" ]] && rc_files+=("$HOME/.bashrc")
+    [[ -f "$HOME/.zshrc"  ]] && rc_files+=("$HOME/.zshrc")
+    [[ ${#rc_files[@]} -eq 0 ]] && rc_files+=("$HOME/.bashrc")  # bare fallback
+
+    for rc in "${rc_files[@]}"; do
+        grep -q '/opt/work/bin'     "$rc" 2>/dev/null \
+            || echo "export PATH=/opt/work/bin:\$HOME/go/bin:\$PATH" >> "$rc"
+        grep -q '\.local/bin'       "$rc" 2>/dev/null \
+            || echo 'export PATH=$HOME/.local/bin:$PATH'             >> "$rc"
+        grep -q '/usr/local/go/bin' "$rc" 2>/dev/null \
+            || echo 'export PATH=/usr/local/go/bin:$PATH'            >> "$rc"
+        info "PATH configured in $rc"
+    done
+
+    # Point RC_FILE at zsh config for the summary message if it exists
+    [[ -f "$HOME/.zshrc" ]] && RC_FILE="$HOME/.zshrc"
 }
 
 # ─────────────────────────────────────────────
