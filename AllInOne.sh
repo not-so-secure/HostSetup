@@ -183,10 +183,8 @@ selectHeavyTools() {
     [[ -n "$ONLY" ]] && return
 
     echo ""
-    echo -e "${BOLD}Select heavy components to install:${NC}  (Enter = yes,  n = skip)"
+    echo -e "${BOLD}Select optional components to install:${NC}  (Enter = yes,  n = skip)"
     local r
-    read -rp "  [?] Metasploit Framework  (~500 MB) ? [Y/n] " r; [[ "$r" =~ ^[Nn] ]] && INSTALL_METASPLOIT=false
-    read -rp "  [?] Sliver C2             (~200 MB) ? [Y/n] " r; [[ "$r" =~ ^[Nn] ]] && INSTALL_SLIVER=false
     read -rp "  [?] SecLists wordlists    (~1  GB)  ? [Y/n] " r; [[ "$r" =~ ^[Nn] ]] && INSTALL_SECLISTS=false
     read -rp "  [?] Docker + Compose               ? [Y/n] " r; [[ "$r" =~ ^[Nn] ]] && INSTALL_DOCKER=false
     echo ""
